@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "sucursal.h"
 
-void crea_sucursal (const char* ciudad, int capacidad);
 void crea_sucursal (const char* ciudad, int capacidad){
 	capacidad_actual = capacidad;
 	// Generamos un duplicado del proceso actual
