@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "sucursal.h"
 
 void crea_sucursal (const char* ciudad, int capacidad){
 	capacidad_actual = capacidad;
