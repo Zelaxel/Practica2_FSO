@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
 
 int* sala_teatro = NULL;
 int capacidad_total = 0;
+char *nombre_sala;
+char menu[215] = "INSTRUCCIONES SALA DE %s:\n1. reserva_asiento <id_persona>\n2. libera_asiento <id_asiento>\n3. estado_asiento <id_asiento>\n4. asientos_ocupados\n5. asientos_libres\n6. capacidad_sala\n7. cerrar_sala\n8. limpiar_panel\n\n";
 
 int reserva_asiento(int id_persona){
 	//Falla si la sala no esta creada o si el id de la persona no es valido.
@@ -15,13 +20,14 @@ int reserva_asiento(int id_persona){
 			return i;
 		}
 	}
-	return -1; //No hay espacio libre.
+	return -2; //No hay espacio libre.
 }
 
 int libera_asiento(int id_asiento){
 	//Falla si la sala no esta creada o si el id del asiento se sale del espacio.
 	if(sala_teatro==NULL || id_asiento >= capacidad_total || id_asiento < 0) return -1;
-
+	// El asiento ya está libre.
+	if(sala_teatro[id_asiento]==-1) return 0;
 	//Hay asiento por lo que lo libera.
 	int id_persona = sala_teatro[id_asiento];
 	sala_teatro[id_asiento]=-1;
@@ -70,18 +76,19 @@ int capacidad_sala(){
     return capacidad_total;
 }
 
-int crea_sala(int capacidad){
+int crea_sala(int capacidad, char *nombre){
     //Falla si la sala no esta creada o si el id del asiento se sale del espacio.
     if(sala_teatro != NULL || capacidad < 1){
         return -1;
     }
     capacidad_total = capacidad;
+    nombre_sala = nombre;
     // Creamos un puntero en memoria, reservando espacio para almacenar
     // los asientos de la sala. Lo ajustamos en base al tamaño del entero.
     sala_teatro = (int*)malloc(capacidad*sizeof(int));
     for(int i=0; i<capacidad; i++){
-    	// A cada asiento de la sala le asignamos -1 para indicar de que estan libres
-        sala_teatro[i] = -1;
+		// A cada asiento de la sala le asignamos -1 para indicar de que estan libres
+		sala_teatro[i] = -1;
     }
     return capacidad;
 }
@@ -95,4 +102,77 @@ int elimina_sala(){
     free(sala_teatro);
     sala_teatro=NULL;
     return 0;
+}
+
+// Minishell 1º argumento: nombre de sala. 2º argumento capacidad de sala.
+int main(int argc, char * argv[]){
+	
+	crea_sala(atoi(argv[2]),argv[1]); // Crea la sala.
+	
+	// Menú.
+	printf(menu,nombre_sala);
+	while(1){
+		char instruccion[100];
+		scanf("%s",&instruccion); // Nueva instruccion.
+		
+		if(!strcmp(instruccion,"reserva_asiento")){ // 1. Reserva asiento.
+			int id_persona;
+			scanf("%d",&id_persona);
+			int id_asiento = reserva_asiento(id_persona);
+			switch(id_asiento){
+				case -1: // Persona erronea.
+					printf("Error. El ID nº %d de la persona es invalido. Los ID's de personas deben ser mayor de 0.\n\n",id_persona);
+					break;
+				case -2: // Asientos ocupados.
+					printf("Todos los asientos están ocupados.\n\n");
+					break;
+				default: // Asiento encontrado.
+					printf("El asiento nº %d ahora está asociado a la persona con ID nº %d.\n\n",id_asiento,id_persona);
+					break;
+			}
+		}
+		else if(!strcmp(instruccion,"libera_asiento")){ // 2. Liberar asiento.
+			int id_asiento;
+			scanf("%d",&id_asiento);
+			int id_persona = libera_asiento(id_asiento);
+			switch(id_persona){
+				case -1: // Asiento erroneo.
+					printf("Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d.\n\n",id_asiento,capacidad_sala()-1);
+					break;
+				case 0: // Asiento libre.
+					printf("El asiento nº %d ya estaba libre.\n\n",id_asiento);
+					break;
+				default: // Asiento ocupado.
+					printf("El asiento nº %d estaba ocupado por la persona con ID nº %d. Ahora está libre.\n\n",id_asiento,id_persona);
+					break;
+			}
+		}
+		else if(!strcmp(instruccion,"estado_asiento")){ // 3. Estado asiento.
+			int id_asiento;
+			scanf("%d",&id_asiento);
+			int id_persona = estado_asiento(id_asiento);
+			switch(id_persona){
+				case -1: // Asiento erroneo.
+					printf("Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d\n\n",id_asiento,capacidad_sala()-1);
+					break;
+				case 0: // Asiento libre.
+					printf("El asiento nº %d está libre.\n\n",id_asiento);
+					break;
+				default: // Asiento ocupado.
+					printf("El asiento nº %d está ocupado por la persona %d\n\n",id_asiento,id_persona);
+					break;
+			}
+		}
+		else if(!strcmp(instruccion,"asientos_ocupados")) printf("Asientos ocupados: %d\n\n",asientos_ocupados()); // 4. Estado de la sala.
+		else if(!strcmp(instruccion,"asientos_libres")) printf("Asientos libres: %d\n\n",asientos_libres()); // 5. Asientos libres.
+		else if(!strcmp(instruccion,"capacidad_sala")) printf("Asientos totales: %d\n\n",capacidad_sala()); // 6. Capacidad de la sala.
+		else if(!strcmp(instruccion,"cerrar_sala")) break; // 7. Cierra la sala.
+		else if(!strcmp(instruccion,"limpiar_panel")){ // 8. Limpia el terminal.
+			int estado;
+			if(fork()==0) execlp("clear","clear",NULL);
+			wait(&estado);
+			printf(menu,nombre_sala);
+		}
+		else printf("Instruccion inválida\n\n"); // Instrucción no valida.
+	}
 }
