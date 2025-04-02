@@ -7,7 +7,7 @@
 int* sala_teatro = NULL;
 int capacidad_total = 0;
 char *nombre_sala;
-char menu[215] = "INSTRUCCIONES SALA DE %s:\n1. reserva_asiento <id_persona>\n2. libera_asiento <id_asiento>\n3. estado_asiento <id_asiento>\n4. asientos_ocupados\n5. asientos_libres\n6. capacidad_sala\n7. cerrar_sala\n8. limpiar_panel\n\n";
+char menu[215] = "INSTRUCCIONES SALA DE %s:\n1. reserva_asiento <id_persona>\n2. libera_asiento <id_asiento>\n3. estado_asiento <id_asiento>\n4. estado_sala\n5. cerrar_sala\n6. limpiar_panel\n\n";
 
 int reserva_asiento(int id_persona){
 	//Falla si la sala no esta creada o si el id de la persona no es valido.
@@ -121,13 +121,13 @@ int main(int argc, char * argv[]){
 			switch(id_asiento){
 				case -1: // Persona erronea.
 					if(id_persona < 1){
-						printf("Error. El ID nº %d de la persona es invalido. Los ID's de personas deben ser mayor de 0.\n\n",id_persona);
+						printf("  Error. El ID nº %d de la persona es invalido. Los ID's de personas deben ser mayor de 0.\n\n",id_persona);
 					} else {
-						printf("Todos los asientos están ocupados.\n\n");
+						printf("  Todos los asientos están ocupados.\n\n");
 					}
 					break;
 				default: // Asiento encontrado.
-					printf("El asiento nº %d ahora está asociado a la persona con ID nº %d.\n\n",id_asiento,id_persona);
+					printf("  El asiento nº %d ahora está asociado a la persona con ID nº %d.\n\n",id_asiento,id_persona);
 					break;
 			}
 		}
@@ -138,13 +138,13 @@ int main(int argc, char * argv[]){
 			switch(id_persona){
 				case -1: // Asiento erroneo.
 					if(id_asiento < 0 || capacidad_sala() <= id_asiento){
-						printf("Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d.\n\n",id_asiento,capacidad_sala()-1);
+						printf("  Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d.\n\n",id_asiento,capacidad_sala()-1);
 					} else {
-						printf("El asiento nº %d ya estaba libre.\n\n",id_asiento);
+						printf("  El asiento nº %d ya estaba libre.\n\n",id_asiento);
 					}
 					break;
 				default: // Asiento ocupado.
-					printf("El asiento nº %d estaba ocupado por la persona con ID nº %d. Ahora está libre.\n\n",id_asiento,id_persona);
+					printf("  El asiento nº %d estaba ocupado por la persona con ID nº %d. Ahora está libre.\n\n",id_asiento,id_persona);
 					break;
 			}
 		}
@@ -154,21 +154,24 @@ int main(int argc, char * argv[]){
 			int id_persona = estado_asiento(id_asiento);
 			switch(id_persona){
 				case -1: // Asiento erroneo.
-					printf("Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d\n\n",id_asiento,capacidad_sala()-1);
+					printf("  Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d\n\n",id_asiento,capacidad_sala()-1);
 					break;
 				case 0: // Asiento libre.
-					printf("El asiento nº %d está libre.\n\n",id_asiento);
+					printf("  El asiento nº %d está libre.\n\n",id_asiento);
 					break;
 				default: // Asiento ocupado.
-					printf("El asiento nº %d está ocupado por la persona %d\n\n",id_asiento,id_persona);
+					printf("  El asiento nº %d está ocupado por la persona %d\n\n",id_asiento,id_persona);
 					break;
 			}
 		}
-		else if(!strcmp(instruccion,"asientos_ocupados")) printf("Asientos ocupados: %d\n\n",asientos_ocupados()); // 4. Estado de la sala.
-		else if(!strcmp(instruccion,"asientos_libres")) printf("Asientos libres: %d\n\n",asientos_libres()); // 5. Asientos libres.
-		else if(!strcmp(instruccion,"capacidad_sala")) printf("Asientos totales: %d\n\n",capacidad_sala()); // 6. Capacidad de la sala.
-		else if(!strcmp(instruccion,"cerrar_sala")) break; // 7. Cierra la sala.
-		else if(!strcmp(instruccion,"limpiar_panel")){ // 8. Limpia el terminal.
+		else if(!strcmp(instruccion,"estado_sala")){ // 4. Estado sala.
+			printf("  Sala de %s:\n  Asientos totales: %d\n  Asientos ocupados: %d\n  Asientos libres: %d\n\n",nombre_sala,capacidad_sala(),asientos_ocupados(),asientos_libres());
+		}
+		else if(!strcmp(instruccion,"cerrar_sala")){ // 5. Cierra la sala.
+			elimina_sala();
+			break;
+		}
+		else if(!strcmp(instruccion,"limpiar_panel")){ // 6. Limpia el terminal.
 			int estado;
 			if(fork()==0) execlp("clear","clear",NULL);
 			wait(&estado);
