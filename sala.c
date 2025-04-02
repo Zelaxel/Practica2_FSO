@@ -20,14 +20,13 @@ int reserva_asiento(int id_persona){
 			return i;
 		}
 	}
-	return -2; //No hay espacio libre.
+	return -1; //No hay espacio libre.
 }
 
 int libera_asiento(int id_asiento){
 	//Falla si la sala no esta creada o si el id del asiento se sale del espacio.
 	if(sala_teatro==NULL || id_asiento >= capacidad_total || id_asiento < 0) return -1;
-	// El asiento ya está libre.
-	if(sala_teatro[id_asiento]==-1) return 0;
+	
 	//Hay asiento por lo que lo libera.
 	int id_persona = sala_teatro[id_asiento];
 	sala_teatro[id_asiento]=-1;
@@ -121,10 +120,11 @@ int main(int argc, char * argv[]){
 			int id_asiento = reserva_asiento(id_persona);
 			switch(id_asiento){
 				case -1: // Persona erronea.
-					printf("Error. El ID nº %d de la persona es invalido. Los ID's de personas deben ser mayor de 0.\n\n",id_persona);
-					break;
-				case -2: // Asientos ocupados.
-					printf("Todos los asientos están ocupados.\n\n");
+					if(id_persona < 1){
+						printf("Error. El ID nº %d de la persona es invalido. Los ID's de personas deben ser mayor de 0.\n\n",id_persona);
+					} else {
+						printf("Todos los asientos están ocupados.\n\n");
+					}
 					break;
 				default: // Asiento encontrado.
 					printf("El asiento nº %d ahora está asociado a la persona con ID nº %d.\n\n",id_asiento,id_persona);
@@ -137,10 +137,11 @@ int main(int argc, char * argv[]){
 			int id_persona = libera_asiento(id_asiento);
 			switch(id_persona){
 				case -1: // Asiento erroneo.
-					printf("Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d.\n\n",id_asiento,capacidad_sala()-1);
-					break;
-				case 0: // Asiento libre.
-					printf("El asiento nº %d ya estaba libre.\n\n",id_asiento);
+					if(id_asiento < 0 || capacidad_sala() <= id_asiento){
+						printf("Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d.\n\n",id_asiento,capacidad_sala()-1);
+					} else {
+						printf("El asiento nº %d ya estaba libre.\n\n",id_asiento);
+					}
 					break;
 				default: // Asiento ocupado.
 					printf("El asiento nº %d estaba ocupado por la persona con ID nº %d. Ahora está libre.\n\n",id_asiento,id_persona);

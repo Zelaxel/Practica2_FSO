@@ -1,10 +1,8 @@
 // Escribe el id en un 'asiento' en memoria y devuelve su dirección.
-// Da 0 si no hay espacio o sala. 
-// Da -1 si no hay sala.
+// Da -1 si no hay sala o no hay asientos.
 int reserva_asiento(int id_persona);
 
 // Borra el id de un 'asiento' en memoria y devuelve el id eliminado.
-// Da 0 si el asiento ya esta libre.
 // Da -1 si no hay sala.
 int libera_asiento(int id_asiento);
 
