@@ -98,12 +98,12 @@ int elimina_sala(){
         return -1;
     }
     // Liberamos el espacio reservado en memoria y inicializamos nuevamente "sala_teatro" a NULL.
-    free(sala_teatro);
+	free(sala_teatro);
     sala_teatro=NULL;
     return 0;
 }
 
-// Minishell 1º argumento: nombre de sala. 2º argumento capacidad de sala.
+// Minishell. 1º argumento: nombre de sala. 2º argumento: capacidad de sala.
 int main(int argc, char * argv[]){
 	
 	crea_sala(atoi(argv[2]),argv[1]); // Crea la sala.
@@ -115,60 +115,80 @@ int main(int argc, char * argv[]){
 		scanf("%s",&instruccion); // Nueva instruccion.
 		
 		if(!strcmp(instruccion,"reserva_asiento")){ // 1. Reserva asiento.
-			int id_persona;
-			scanf("%d",&id_persona);
+			char id[100];
+			scanf("%s",&id);
+			int id_persona = atoi(id);
 			int id_asiento = reserva_asiento(id_persona);
 			switch(id_asiento){
 				case -1: // Persona erronea.
 					if(id_persona < 1){
-						printf("  Error. El ID nº %d de la persona es invalido. Los ID's de personas deben ser mayor de 0.\n\n",id_persona);
+						printf("  Error. El ID nº %d de la persona es invalido. Los ID's de personas deben ser mayor de 0.\n\n",
+						id_persona);
 					} else {
 						printf("  Todos los asientos están ocupados.\n\n");
 					}
 					break;
 				default: // Asiento encontrado.
-					printf("  El asiento nº %d ahora está asociado a la persona con ID nº %d.\n\n",id_asiento,id_persona);
+					printf("  El asiento nº %d ahora está asociado a la persona con ID nº %d.\n\n",
+							id_asiento,
+							id_persona);
 					break;
 			}
 		}
 		
 		else if(!strcmp(instruccion,"libera_asiento")){ // 2. Liberar asiento.
-			int id_asiento;
-			scanf("%d",&id_asiento);
+			char id[100];
+			scanf("%s",&id);
+			int id_asiento = atoi(id);
 			int id_persona = libera_asiento(id_asiento);
 			switch(id_persona){
 				case -1: // Asiento erroneo.
 					if(id_asiento < 0 || capacidad_sala() <= id_asiento){
-						printf("  Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d.\n\n",id_asiento,capacidad_sala()-1);
+						printf("  Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d.\n\n",
+								id_asiento,
+								capacidad_sala()-1);
 					} else {
-						printf("  El asiento nº %d ya estaba libre.\n\n",id_asiento);
+						printf("  El asiento nº %d ya estaba libre.\n\n",
+								id_asiento);
 					}
 					break;
 				default: // Asiento ocupado.
-					printf("  El asiento nº %d estaba ocupado por la persona con ID nº %d. Ahora está libre.\n\n",id_asiento,id_persona);
+					printf("  El asiento nº %d estaba ocupado por la persona con ID nº %d. Ahora está libre.\n\n",
+							id_asiento,
+							id_persona);
 					break;
 			}
 		}
 		
 		else if(!strcmp(instruccion,"estado_asiento")){ // 3. Estado asiento.
-			char val[100];
-			scanf("%s",&val);
-			int id_persona = estado_asiento(atoi(val));
+			char id[100];
+			scanf("%s",&id);
+			int id_asiento = atoi(id);
+			int id_persona = estado_asiento(id_asiento);
 			switch(id_persona){
 				case -1: // Asiento erroneo.
-					printf("  Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d\n\n",id_asiento,capacidad_sala()-1);
+					printf("  Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d\n\n",
+							id_asiento,
+							capacidad_sala()-1);
 					break;
 				case 0: // Asiento libre.
-					printf("  El asiento nº %d está libre.\n\n",id_asiento);
+					printf("  El asiento nº %d está libre.\n\n",
+							id_asiento);
 					break;
 				default: // Asiento ocupado.
-					printf("  El asiento nº %d está ocupado por la persona %d\n\n",id_asiento,id_persona);
+					printf("  El asiento nº %d está ocupado por la persona %d\n\n",
+							id_asiento,
+							id_persona);
 					break;
 			}
 		}
 		
 		else if(!strcmp(instruccion,"estado_sala")){ // 4. Estado sala.
-			printf("  Sala de %s:\n  Asientos totales: %d\n  Asientos ocupados: %d\n  Asientos libres: %d\n\n",nombre_sala,capacidad_sala(),asientos_ocupados(),asientos_libres());
+			printf("  Sala de %s:\n  Asientos totales: %d\n  Asientos ocupados: %d\n  Asientos libres: %d\n\n",
+					nombre_sala,
+					capacidad_sala(),
+					asientos_ocupados(),
+					asientos_libres());
 		}
 		
 		else if(!strcmp(instruccion,"cerrar_sala")){ // 5. Cierra la sala.
