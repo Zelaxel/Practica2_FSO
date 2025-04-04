@@ -19,6 +19,9 @@ void crea_sucursal (const char* ciudad, int capacidad){
 		printf("Error al ejecutar gnome-terminal");
 		exit(1);
 	}
+	int estado;
+	wait(&estado);
+	prinf("La sala de %s ha cerrado", ciudad);
 }
 
 void main(){
