@@ -2,9 +2,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 
 void crea_sucursal (const char* ciudad, int capacidad){
-	capacidad_actual = capacidad;
+	char capacidad_str[10];
+    	sprintf(capacidad_str, "%d", capacidad);
+    	
 	// Generamos un duplicado del proceso actual
 	pid_t proceso = fork();
 	
@@ -20,11 +23,11 @@ void crea_sucursal (const char* ciudad, int capacidad){
 		exit(1);
 	}
 	int estado;
-	wait(&estado);
-	prinf("La sala de %s ha cerrado", ciudad);
+	waitpid(proceso, &estado, 0);
+	printf("La sala de %s ha cerrado", ciudad);
 }
 
-void main(){
+int main(){
 	char nombresala[100];
 	int capacidad;
 	
@@ -35,7 +38,7 @@ void main(){
 		scanf("%s",nombresala); // Usamos %s para leer cadenas
 		
 		// Si el usuario escribe "salir" le saca del programa
-		if(!strcmp("salir",nombresala) break;
+		if(!strcmp("salir",nombresala)) break;
 		
 		printf("¿Que capacidad va a tener la sala?");
 		scanf("%d",&capacidad); // Usamos %d para leer enteros
