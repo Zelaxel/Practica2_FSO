@@ -131,6 +131,7 @@ int main(int argc, char * argv[]){
 					break;
 			}
 		}
+		
 		else if(!strcmp(instruccion,"libera_asiento")){ // 2. Liberar asiento.
 			int id_asiento;
 			scanf("%d",&id_asiento);
@@ -148,10 +149,11 @@ int main(int argc, char * argv[]){
 					break;
 			}
 		}
+		
 		else if(!strcmp(instruccion,"estado_asiento")){ // 3. Estado asiento.
-			int id_asiento;
-			scanf("%d",&id_asiento);
-			int id_persona = estado_asiento(id_asiento);
+			char val[100];
+			scanf("%s",&val);
+			int id_persona = estado_asiento(atoi(val));
 			switch(id_persona){
 				case -1: // Asiento erroneo.
 					printf("  Error. El asiento nº %d no existe. Solo hay asientos del 0 al %d\n\n",id_asiento,capacidad_sala()-1);
@@ -164,19 +166,32 @@ int main(int argc, char * argv[]){
 					break;
 			}
 		}
+		
 		else if(!strcmp(instruccion,"estado_sala")){ // 4. Estado sala.
 			printf("  Sala de %s:\n  Asientos totales: %d\n  Asientos ocupados: %d\n  Asientos libres: %d\n\n",nombre_sala,capacidad_sala(),asientos_ocupados(),asientos_libres());
 		}
+		
 		else if(!strcmp(instruccion,"cerrar_sala")){ // 5. Cierra la sala.
 			elimina_sala();
 			break;
 		}
+		
 		else if(!strcmp(instruccion,"limpiar_panel")){ // 6. Limpia el terminal.
 			int estado;
-			if(fork()==0) execlp("clear","clear",NULL);
-			wait(&estado);
-			printf(menu,nombre_sala);
+			switch(fork()){
+				case -1: // Error al lanzar proceso.
+					printf("  No se pudo limpiar la pantalla. Repitalo ahora o más tarde.\n\n");
+					break;
+				case 0:	// (hijo) Borra la pantalla.
+					execlp("clear","clear",NULL);
+					break;
+				default: // (Padre) Espera a que el hijo borre.
+					wait(&estado);
+					printf(menu,nombre_sala);
+					break;
+			}
 		}
-		else printf("Instruccion inválida\n\n"); // Instrucción no valida.
+		
+		else printf("Instruccion inválida '%s'\n",instruccion); // Instrucción no valida.
 	}
 }
