@@ -21,31 +21,40 @@ void crea_sucursal (const char* ciudad, char* capacidad){
 	}
 	int estado;
 	waitpid(proceso, &estado, 0);
-	printf("La sala de %s ha cerrado\n\n", ciudad);
+	printf("\n\nLa sala de %s ha cerrado\n", ciudad);
+	printf("Debido al cierre, introduzca nuevamente: ");
 	exit(0);
 }
 
 int main(){
 	char nombresala[100];
 	int capacidad;
+	int opcion = 0;
 	
-	// Generamos un bucle infinito que no termina hasta que se
-	// solicite salir del programa
-	printf("1. crea_sucursal <nombre> <capacidad>\n2. salir\n3. limpiar_panel\n");
-	char Instruccion[100];
-	while(1){
-		printf("\n");
-		scanf("%s",Instruccion); // Usamos %s para leer cadenas
-		if(!strcmp("crear_sucursal",Instruccion)){ // Creamos una sala.
-			char nombre[100];
-			char capacidad[100];
-			scanf("%s",&nombre);
-			scanf("%s",capacidad);
-			if(fork()==0) crea_sucursal(nombre,capacidad);
+	while (1) {
+		printf("\n1 - Crear nueva sucursal\n2 - Salir\n");
+		printf("Seleccione una opcion: ");
+		scanf("%d", &opcion);
+
+		switch(opcion) {
+		    case 1: {
+		        char capacidad_total[100];
+		        printf("Ingrese el nombre de la ciudad: ");
+		        scanf("%s", nombresala);
+		        printf("¿Cual sera la capacidad?: ");
+		        scanf("%d", &capacidad);
+		        sprintf(capacidad_total, "%d", capacidad);
+		        if (fork() == 0) {
+		            crea_sucursal(nombresala, capacidad_total);
+		        }
+		        break;
+		    }
+		    case 2:
+		        printf("\nProceso finalizado\n");
+		        return 0;
+		    default:
+		        printf("Opcion no valida. Intente de nuevo.\n");
 		}
-		// Si el usuario escribe "salir" le saca del programa
-		if(!strcmp("salir",Instruccion)) break;
-	}
-	printf("\nProceso finalizado\n");
+	    }
 	return 0;
 }
