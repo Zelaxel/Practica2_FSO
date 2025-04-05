@@ -11,7 +11,7 @@ void crea_sucursal (const char* ciudad, char* capacidad){
 	// Se comprueba si no se ha podido crear un nuevo proceso
 	if(proceso == -1){
 		printf("\nSe ha producido un error en el proceso");
-		exit(-11);
+		exit(-1);
 	}
 	// En caso contrario, se ejecuta "gnome-terminal" y se abre la aplicacion ./sala"
 	if(proceso == 0) {
@@ -29,32 +29,51 @@ void crea_sucursal (const char* ciudad, char* capacidad){
 int main(){
 	char nombresala[100];
 	int capacidad;
-	int opcion = 0;
+	char instruccion[100];
+	char menu[200] = "1. crea_sucursal\n2. salas_cerradas\n3. salir\n4. limpiar_panel\n\n";
+	int salas_cerradas[1000];
 	
+	printf(menu);
 	while (1) {
-		printf("\n1 - Crear nueva sucursal\n2 - Salir\n");
-		printf("Seleccione una opcion: ");
-		scanf("%d", &opcion);
-
-		switch(opcion) {
-		    case 1: {
-		        char capacidad_total[100];
-		        printf("Ingrese el nombre de la ciudad: ");
-		        scanf("%s", nombresala);
-		        printf("¿Cual sera la capacidad?: ");
-		        scanf("%d", &capacidad);
-		        sprintf(capacidad_total, "%d", capacidad);
-		        if (fork() == 0) {
-		            crea_sucursal(nombresala, capacidad_total);
-		        }
-		        break;
-		    }
-		    case 2:
-		        printf("\nProceso finalizado\n");
-		        return 0;
-		    default:
-		        printf("Opcion no valida. Intente de nuevo.\n");
-		}
+		scanf("%s", &instruccion);
+		
+		if(!strcmp(instruccion,"crea_sucursal")){ // Crea sucursal.
+			char capacidad_total[100];
+	        printf("Ingrese el nombre de la ciudad: ");
+	        scanf("%s", nombresala);
+	        printf("¿Cual sera la capacidad?: ");
+	        scanf("%d", &capacidad);
+	        sprintf(capacidad_total, "%d", capacidad);
+	        switch (fork()) {
+	        	case 0:
+	            	crea_sucursal(nombresala, capacidad_total);
+	            	break;
+	            case -1:
+	            	printf("Error al crear sala.");
+	        }
 	    }
-	return 0;
+	    
+		else if(!strcmp(instruccion,"salir")){ // Cerrar la ejecución.
+	        printf("\nProceso finalizado\n");
+	        return 0;
+	    }
+	    
+	    else if(!strcmp(instruccion,"limpiar_panel")){ // 6. Limpia el terminal.
+			int estado;
+			switch(fork()){
+				case -1: // Error al lanzar proceso.
+					printf("  No se pudo limpiar la pantalla. Repitalo ahora o más tarde.\n\n");
+					break;
+				case 0:	// (hijo) Borra la pantalla.
+					execlp("clear","clear",NULL);
+					break;
+				default: // (Padre) Espera a que el hijo borre.
+					wait(&estado);
+					printf(menu);
+					break;
+			}
+		}
+	    
+		else printf("Instruccion no valida '%s'. Intente de nuevo.\n",instruccion); // Opcion invalida.
+	}
 }
