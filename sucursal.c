@@ -14,17 +14,18 @@ void crea_sucursal (const char* ciudad, int capacidad){
 	// Se comprueba si no se ha podido crear un nuevo proceso
 	if(proceso == -1){
 		printf("\nSe ha producido un error en el proceso");
-		exit(1);
+		exit(-11);
 	}
 	// En caso contrario, se ejecuta "gnome-terminal" y se abre la aplicacion ./sala"
 	if(proceso == 0) {
 		execlp("gnome-terminal","gnome-terminal","--wait", "--", "./sala", ciudad, capacidad_str, NULL);
 		printf("\nError al ejecutar gnome-terminal");
-		exit(1);
+		exit(-1);
 	}
 	int estado;
 	waitpid(proceso, &estado, 0);
 	printf("\nLa sala de %s ha cerrado", ciudad);
+	exit(0);
 }
 
 int main(){
@@ -43,7 +44,7 @@ int main(){
 		printf("\n¿Que capacidad va a tener la sala?: ");
 		scanf("%d",&capacidad); // Usamos %d para leer enteros
 		
-		crea_sucursal (nombresala, capacidad);
+		if(fork()==0) crea_sucursal (nombresala, capacidad);
 	}
 	printf("\nProceso finalizado");
 	return 0;
