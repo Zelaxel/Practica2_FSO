@@ -212,6 +212,6 @@ int main(int argc, char * argv[]){
 			}
 		}
 		
-		else printf("Instruccion inválida '%s'\n",instruccion); // Instrucción no valida.
+		else printf("Instruccion invalida '%s'. Intente de nuevo.\n\n",instruccion); // Opcion invalida.
 	}
 }
