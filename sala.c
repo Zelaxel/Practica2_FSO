@@ -103,7 +103,7 @@ int elimina_sala(){
 // Minishell. 1º argumento: nombre de sala. 2º argumento: capacidad de sala.
 int main(int argc, char * argv[]){
 	
-	if(crea_sala(atoi(argv[2]))==-1) exit(-1); // Crea la sala.
+	crea_sala(atoi(argv[2])); // Crea la sala.
 	
 	char *nombre_sala = argv[1];
 	char menu[215] = "INSTRUCCIONES SALA DE %s:\n1. reserva_asiento\n2. libera_asiento\n3. estado_asiento\n4. estado_sala\n5. cerrar_sala\n6. limpiar_panel\n\n";
